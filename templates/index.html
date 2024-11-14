@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Conversation Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #1e1e1e;
+            color: #ddd;
+            display: flex;
+            padding: 20px;
+            margin: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #sidebar {
+            width: 15%;
+            background-color: #2a2a2a;
+            padding: 20px;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+            border-right: 2px solid #666666;
+        }
+        h2 {
+            color: #f1f1f1;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .conversation-history {
+            list-style: none;
+            padding: 0;
+        }
+        .conversation-item {
+            padding: 15px;
+            background-color: #333;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .conversation-item:hover {
+            background-color: #444;
+        }
+        #new-chat-button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        #new-chat-button:hover {
+            background-color: #2563eb;
+        }
+        h1 {
+            text-align: center;
+            font-weight: 600;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #f1f1f1;
+            letter-spacing: 1px;
+        }
+        #main-content {
+            margin-left: 2%;
+            width: 95%;
+            background-color: #1e1e1e;
+            padding: 20px;
+        }
+        #chatbox {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 15px;
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .message-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .user-message-container {
+            justify-content: flex-end;
+        }
+        .bot-message-container {
+            justify-content: flex-start;
+        }
+        .message {
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 1em;
+            line-height: 1.4;
+            word-wrap: break-word;
+            max-width: 60%;
+            min-width: 80px;
+            margin: 0 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .user-message {
+            background-color: #3b82f6;
+            color: white;
+            display: inline-block;
+            position: relative;
+        }
+        .bot-message {
+            background-color: #333;
+            color: #ddd;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .input-container {
+            display: flex;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 15px 20px;
+            font-size: 16px;
+            border-radius: 30px;
+            border: none;
+            outline: none;
+            background-color: #333;
+            color: #ddd;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .button-container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        button, label {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            margin-left: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        button:hover, label:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        #upload-label {
+            margin-right: 10px;
+        }
+        #file-input {
+            display: none;
+        }
+        .mic-button {
+            background-color: #4b5563;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .mic-button:hover {
+            background-color: #374151;
+            transform: scale(1.1);
+        }
+        .globe-icon {
+            margin-left: 10px;
+            cursor: pointer;
+            color: white;
+            font-size: 16px;
+        }
+        .globe-icon:hover {
+            color: #ffffffb3;
+        }
+        #evaluate-btn {
+    background-color: #fbbf24;
+    color: black;
+}
+
+.modal-content h2 {
+    color: #fbbf24;
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+
+        /* Modal (弹窗) 样式 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定位置 */
+            z-index: 1; /* 置于最前 */
+            left: 0;
+            top: 0;
+            width: 100%; /* 全屏宽度 */
+            height: 100%; /* 全屏高度 */
+            background-color: rgba(0, 0, 0, 0.8); /* 半透明黑色背景 */
+        }
+
+        .modal-content {
+            background-color: #151515; /* 背景颜色改为纯黑 */
+            color: #eeeaea;
+            margin: 15% auto; /* 中心显示 */
+            padding: 20px;
+            border: 1px solid #787878;
+            width: 50%; /* 弹窗宽度 */
+        }
+
+        .close {
+            color: #fff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #aaa;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 使输入框和按钮在同一行并对齐 */
+        .email-container {
+            display: flex;
+            align-items: center;  /* 垂直居中对齐 */
+            margin-top: 20px;
+        }
+
+        #email-input {
+            flex: 3;  /* 输入框占据剩余空间 */
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #2a2a2a;
+            color: #ddd;
+            box-sizing: border-box;  /* 确保内边距和边框不会影响宽度 */
+        }
+
+        #send-email-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;  /* 防止按钮文字换行 */
+            margin-left: 0;
+        }
+
+        #send-email-btn:hover {
+            background-color: #2563eb;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h2>Conversation History</h2>
+        <button id="new-chat-button" onclick="createNewChat()">New Chat</button>
+        <ul class="conversation-history" id="history-list"></ul>
+    </div>
+
+    <div id="main-content">
+        <h1>AI Conversation Assistant</h1>
+    
+        <!-- 聊天框 -->
+        <div id="chatbox"></div>
+    
+        <!-- 输入区域 -->
+        <div class="input-container">
+            <input type="text" id="question" placeholder="Type or modify the content here...">
+            <input type="text" id="reference-answer" placeholder="Enter reference answer...">
+            <div class="mic-button" onclick="startListening()">
+                <i class="fas fa-microphone"></i>
+            </div>
+        </div>
+    
+        <!-- 按钮区域 -->
+        <div class="button-container">
+            <button id="evaluate-btn" onclick="evaluateAnswer()">Evaluate</button>
+            <label id="upload-label" for="file-input">Upload and Parse File</label>
+            <input type="file" id="file-input" accept="audio/*" onchange="uploadFile()" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    
+
+    <audio id="audio" controls style="display:none;"></audio>
+
+    <!-- 模态窗口 -->
+     <!-- Evaluation Modal -->
+<div id="evaluation-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEvaluationModal()">&times;</span>
+        <h2>Evaluation Results</h2>
+        <p id="evaluation-results">Results will be displayed here.</p>
+    </div>
+</div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p id="modal-text">Some text in the Modal..</p>
+            <button id="read-aloud-btn">Read the Text</button> <!-- 语音播放按钮 -->
+
+            <!-- 发送邮件部分 -->
+            <div class="email-container">
+                <input type="email" id="email-input" placeholder="Enter email address">
+                <button id="send-email-btn">Send Email</button> <!-- 发送邮件按钮 -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let responses = [];
+        let currentConversationId = null;
+
+        function loadConversationHistory() {
+            fetch('/get_history')
+                .then(response => response.json())
+                .then(history => {
+                    const historyList = document.getElementById("history-list");
+                    historyList.innerHTML = "";
+                    history.forEach(item => {
+                        const listItem = document.createElement("li");
+                        listItem.className = "conversation-item";
+                        listItem.textContent = `${item.timestamp} - ${item.preview}`;
+                        listItem.onclick = () => loadConversationDetail(item.id);
+                        historyList.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Failed to load conversation history:", error);
+                });
+        }
+
+        function openModal() {
+            modal.style.display = "block";
+            emailInput.value = '';  // 清空输入框的值，每次打开模态窗口时重置输入框
+        }
+
+        function createNewChat() {
+            fetch('/create_conversation', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.conversation_id) {
+                    alert("New conversation created!");
+                    currentConversationId = data.conversation_id;
+                    loadConversationHistory();
+                } else {
+                    alert("Failed to create new conversation.");
+                }
+            })
+            .catch(error => {
+                console.error("Error creating conversation:", error);
+            });
+        }
+
+        function loadConversationDetail(conversationId) {
+            fetch(`/get_conversation/${conversationId}`)
+                .then(response => response.json())
+                .then(conversation => {
+                    const chatbox = document.getElementById("chatbox");
+                    chatbox.innerHTML = "";
+                    conversation.messages.forEach(message => {
+                        const messageContainer = `
+                            <div class="message-container ${message.role === 'user' ? 'user-message-container' : 'bot-message-container'}">
+                                <img class="avatar" src="/static/${message.role === 'user' ? 'user.png' : 'bot.jpg'}" alt="${message.role === 'user' ? 'User' : 'Bot'} Avatar">
+                                <div class="message ${message.role === 'user' ? 'user-message' : 'bot-message'}">
+                                    ${message.content}
+                                </div>
+                            </div>`;
+                        chatbox.innerHTML += messageContainer;
+                    });
+                    currentConversationId = conversationId;
+                })
+                .catch(error => {
+                    console.error("Failed to load conversation detail:", error);
+                });
+        }
+
+        function sendMessage() {
+            const question = document.getElementById("question").value;
+            if (!question) {
+                alert("Please enter a question!");
+                return;
+            }
+            const chatbox = document.getElementById("chatbox");
+            // 默认通过 RAGFlow 获取答案
+            const userMessage = `
+                <div class="message-container user-message-container">
+                    <div class="message user-message">
+                        ${question}
+                        <i class="fas fa-globe globe-icon" onclick="searchOnGoogle('${question}')"></i>
+                    </div>
+                    <img class="avatar" src="/static/user.png" alt="User Avatar">
+                </div>`;
+            chatbox.innerHTML += userMessage;
+            document.getElementById("question").value = ''; // 清空输入框
+            chatbox.scrollTop = chatbox.scrollHeight; // 自动滚动到最新消息
+
+            // 通过 RAGFlow 获取答案
+            fetch('/get_answer', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ question: question }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                responses.push({ answer: data.answer, audio_url: data.audio_url });
+                const index = responses.length - 1;
+                const botMessage = `
+                    <div class="message-container bot-message-container">
+                        <img class="avatar" src="/static/bot.jpg" alt="Bot Avatar">
+                        <div class="message bot-message">${data.answer}
+                            <i class="fas fa-volume-up" style="margin-left:10px; cursor:pointer;" onclick="playAudio(${index})"></i>
+                            <i class="fas fa-envelope" style="margin-left:10px; cursor:pointer;" onclick="sendEmail(${index})"></i>
+                        </div>
+                    </div>`;
+                chatbox.innerHTML += botMessage;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            })
+            .catch(error => {
+                const botMessage = `
+                    <div class="message-container bot-message-container">
+                        <img class="avatar" src="/static/bot.jpg" alt="Bot Avatar">
+                        <div class="message bot-message">The request failed. Please try again later.</div>
+                    </div>`;
+                chatbox.innerHTML += botMessage;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            });
+        }
+
+        function playAudio(index) {
+            const audioUrl = responses[index].audio_url;
+            const audio = new Audio(audioUrl);
+            audio.play();
+        }
+
+        function sendEmail(index) {
+            const emailContent = responses[index].answer;
+            const recipientEmail = prompt("Please enter the recipient's email address:");
+            if (recipientEmail) {
+                fetch('/send_email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email_content: emailContent,
+                        recipient_email: recipientEmail
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.response) {
+                        alert("Email sent successfully!");
+                    } else {
+                        alert("Failed to send email: " + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending email:", error);
+                    alert("Error sending email.");
+                });
+            }
+        }
+
+        function uploadFile() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.content) {
+                        document.getElementById('question').value = data.content;
+                    } else {
+                        document.getElementById('question').value = `Error: ${data.error}`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('question').value = `Error: ${error}`;
+                });
+            }
+        }
+
+        function searchOnGoogle(query) {
+            console.log(query); // 打印问题确认是否获取成功
+
+            if (!query) {
+                alert("Please enter a question!");
+                return;
+            }
+            
+            // 发送请求到后端并传递问题
+            fetch('/search_and_summarize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.summary) {
+                    document.getElementById('modal-text').innerHTML = data.summary; // 将搜索结果放入模态内容中
+                    modal.style.display = "block"; // 显示模态窗口
+                } else {
+                    alert("Failed to summarize content.");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching summary:", error);
+            });
+        }
+
+        // 获取模态窗口元素
+        var modal = document.getElementById("myModal");
+
+        // 获取关闭按钮元素
+        var span = document.getElementsByClassName("close")[0];
+
+        // 当用户点击 x 按钮时，关闭模态窗口
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // 当用户点击模态窗口外部时，关闭模态窗口
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function startListening() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Sorry, your browser doesn't support speech recognition.");
+                return;
+            }
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById("question").value = transcript;
+            };
+            recognition.onerror = function(event) {
+                console.error(event.error);
+            };
+            recognition.start();
+        }
+
+        // 使用 Web Speech API 朗读模态窗口的文字
+        function readAloud(text) {
+            const utterance = new SpeechSynthesisUtterance(text);  // 创建一个语音合成对象
+            utterance.lang = 'en-US';  // 设置语言
+            speechSynthesis.speak(utterance);  // 调用语音合成并朗读
+        }
+        // Function to handle evaluation
+        function evaluateAnswer() {
+    const question = document.getElementById("question").value;
+    const referenceAnswer = document.getElementById("reference-answer").value;
+
+    if (!question || !referenceAnswer) {
+        alert("Please provide both the question and reference answer.");
+        return;
+    }
+
+    // 获取聊天框元素
+    const chatbox = document.getElementById("chatbox");
+
+    // 将用户的问题显示在聊天框中
+    const userMessage = `
+        <div class="message-container user-message-container">
+            <div class="message user-message">${question}</div>
+            <img class="avatar" src="/static/user.png" alt="User Avatar">
+        </div>`;
+    chatbox.innerHTML += userMessage;  // 添加用户消息
+    chatbox.scrollTop = chatbox.scrollHeight;  // 滚动到底部
+
+    // 清空输入框
+    document.getElementById("question").value = '';
+
+    // 调用后端 API 进行评估
+    fetch('/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            evaluation_queries: [question],
+            ground_truths: [{ answer: referenceAnswer }]
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Evaluation failed: ${data.error}`);
+        } else {
+            // 构建评估结果
+            const results = data.map(result => `
+                <strong>Reference:</strong> ${result.reference_answer} <br>
+                <strong>Generated:</strong> ${result.generated_answer} <br>
+                <strong>BLEU Score:</strong> ${result.bleu_score.toFixed(2)} <br>
+                <strong>Final Scores:</strong> ${result.final_scores.join(", ")}
+            `).join("<hr>");
+
+            // 将评估结果作为机器人的消息显示在聊天框中
+            const botMessage = `
+                <div class="message-container bot-message-container">
+                    <img class="avatar" src="/static/bot.jpg" alt="Bot Avatar">
+                    <div class="message bot-message">${results}</div>
+                </div>`;
+            chatbox.innerHTML += botMessage;  // 添加机器人消息
+            chatbox.scrollTop = chatbox.scrollHeight;  // 滚动到底部
+        }
+    })
+    .catch(error => {
+        console.error("Evaluation error:", error);
+        const errorMessage = `
+            <div class="message-container bot-message-container">
+                <img class="avatar" src="/static/bot.jpg" alt="Bot Avatar">
+                <div class="message bot-message">The request failed. Please try again later.</div>
+            </div>`;
+        chatbox.innerHTML += errorMessage;
+        chatbox.scrollTop = chatbox.scrollHeight;
+    });
+}
+
+// 关闭模态窗口的逻辑
+function closeEvaluationModal() {
+    document.getElementById('evaluation-modal').style.display = "none";
+}
+
+
+
+
+// Close the evaluation modal
+function closeEvaluationModal() {
+    document.getElementById('evaluation-modal').style.display = "none";
+}
+
+
+        // 给播放按钮添加点击事件，点击时朗读模态窗口中的文字
+        document.getElementById('read-aloud-btn').onclick = function() {
+            const text = document.getElementById('modal-text').textContent;  // 获取模态窗口中的文字
+            readAloud(text);  // 调用朗读函数
+        }
+        span.onclick = function() {
+            modal.style.display = "none";
+            speechSynthesis.cancel();  // 停止正在进行的语音朗读
+        }
+
+        // 获取模态窗口中的发送邮件按钮
+        document.getElementById('send-email-btn').onclick = function() {
+            const email = document.getElementById('email-input').value;  // 获取输入的邮箱地址
+            const emailContent = document.getElementById('modal-text').textContent;  // 获取模态窗口中的文字
+
+            if (!email) {
+                alert("Please enter a valid email address!");  // 检查是否输入了邮箱地址
+                return;
+            }
+
+            // 调用后端 API 发送邮件
+            fetch('/send_email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email_content: emailContent,  // 邮件内容为模态窗口中的文字
+                    recipient_email: email  // 发送到的邮箱地址
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response) {
+                    alert("Email sent successfully!");
+                } else {
+                    alert("Failed to send email: " + data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error sending email:", error);
+                alert("Error sending email.");
+            });
+        };
+
+
+// 当用户点击模态窗口外部时，也关闭模态窗口并停止语音
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                speechSynthesis.cancel();  // 停止正在进行的语音朗读
+            }
+        };
+    </script>
+
+</body>
+</html>
