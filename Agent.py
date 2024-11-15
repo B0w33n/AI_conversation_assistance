@@ -173,7 +173,7 @@ email_agent = ToolUseAssistantAgent(
 team = RoundRobinGroupChat([search_agent, summarize_agent, email_agent])
 
 # ---------------------
-# 主函数
+# Main function
 # ---------------------
 
 async def main():
