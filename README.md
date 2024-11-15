@@ -45,7 +45,7 @@ pip install -r requirements.txt
 ###Setup and Usage
 1. Download the project from the Github
 2. Follow the instruction above: pip install -r requirements.txt
-3. Run the Agent.py
+3. Run the app.py
 4. Load the page on the browser
 
 
