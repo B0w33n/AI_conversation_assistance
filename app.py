@@ -4,9 +4,9 @@ import requests
 import os
 import json
 import openai
-import time  # 用于生成唯一的音频文件名
+import time  # Used to generate a unique audio file name
 import http.client
-from bs4 import BeautifulSoup  # 用于爬虫抓取内容
+from bs4 import BeautifulSoup  # Used for web scraping to fetch content
 from mem0 import MemoryClient
 import serpapi
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
@@ -33,23 +33,23 @@ CORS(app)
 openai.api_key = "sk-_c5WCLMLPcFi0ATazdykKeRyJu0FTgzDg1xldEsGz0T3BlbkFJ9D-4oQAkQ8e6pOETrNWVDPKrhQojXkTKKSdz6rIHYA"
 MEM0_API_KEY = 'm0-YyXywajmT0hsBj1SkV4SBMGhE5ymAiinz4ITqr6t'
 
-# RAGFlow API 配置
+# RAGFlow API configuration
 NEW_CONVERSATION_URL = "http://34.87.214.14/v1/api/new_conversation"
 COMPLETION_URL = "http://34.87.214.14/v1/api/completion"
 RAGFLOW_API_KEY = "ragflow-VkZGQ1NjBjN2EzZDExZWY4MmM1MDI0Mm"
 USER_ID = 'Zyp123'
 USER_ID_MEM0 = 'm123'
 
-# 设置文件上传路径
+# Set the file upload path
 UPLOAD_FOLDER = "uploads/"
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# 初始化 Mem0 记忆客户端
+# Initialize the Mem0 memory client
 memory_client = MemoryClient(api_key=MEM0_API_KEY)
 
-# 清理 static 文件夹中旧的音频文件
+# Clean up old audio files in the static folder
 def clear_static_audio_files():
     folder = 'static'
     for filename in os.listdir(folder):
@@ -65,7 +65,7 @@ def store_conversation_in_memory(conversation):
     memory_client.add(messages=conversation, user_id=USER_ID_MEM0)
     print("Conversation added to memory.")
 
-# 创建一个新的会话并返回会话 ID
+# Create a new session and return the session ID
 def create_conversation():
     headers = {
         'Authorization': f'Bearer {RAGFLOW_API_KEY}'
@@ -92,7 +92,7 @@ def create_conversation():
         print(f"Request failed: {str(e)}")
         return None
 
-# 使用 RAGFlow API 生成回答
+# Generate answers using the RAGFlow API
 def query_ragflow_api(question, conversation_id):
     headers = {
         'Authorization': f'Bearer {RAGFLOW_API_KEY}',
@@ -132,13 +132,13 @@ def query_ragflow_api(question, conversation_id):
     except requests.exceptions.RequestException as e:
         return f"Request failed: {str(e)}"
 
-# 获取基于上下文的回答
+# Obtain context-based answers
 def get_context_aware_response(question, conversation):
-    # 使用 Mem0 检索相关的上下文记忆
+    # Retrieve relevant context memories using Mem0
     relevant_memories = memory_client.search(question, user_id=USER_ID_MEM0)
     context = "\n".join([m["memory"] for m in relevant_memories])
 
-    # 如果有上下文记忆，包含到 prompt 中
+    # If there is context memory, include it in the prompt
     if context:
         prompt = f"""You are an intelligent assistant, if there is an answer to the user's question in the previous interactions, then please summarize the relevant content to answer the question, Answers need to consider chat history.
         Previous interactions:
@@ -149,11 +149,11 @@ def get_context_aware_response(question, conversation):
     else:
         prompt = f"You are an intelligent assistant, if there is no answer to the user's question in the context, then please summarize the content of the knowledge base to answer the question, please enumerate the data in the knowledge base to answer in detail. When all knowledge base content is irrelevant to the question, answer with the relevant content remembered by the mem0 memory layer. Answers need to consider chat history. Answer the user question: {question}"
 
-    # 使用 RAGFlow 生成基于上下文的回答
+    # Generate context-based answers using RAGFlow
     conversation_id = create_conversation()
     if conversation_id:
         answer = query_ragflow_api(prompt, conversation_id)
-        # 将当前会话存入 Mem0
+        # Save the current session to Mem0
         conversation.append({"role": "user", "content": question})
         conversation.append({"role": "assistant", "content": answer})
         store_conversation_in_memory(conversation)
@@ -161,9 +161,9 @@ def get_context_aware_response(question, conversation):
     else:
         return "Failed to create conversation."
 
-# 将文本转换为语音
+# Convert text to speech
 def text_to_speech(text):
-    # 使用时间戳生成唯一的文件名
+    # Generate a unique file name using a timestamp
     timestamp = int(time.time())
     filename = f'static/response_{timestamp}.mp3'
     tts = gTTS(text=text, lang='en')
@@ -189,7 +189,7 @@ def upload_file():
     file.save(filepath)
 
     try:
-        # 处理音频文件
+        # Process audio files
         if file_type.startswith('audio/'):
             with open(filepath, "rb") as audio_file:
                 transcript = openai.Audio.transcribe("whisper-1", audio_file)
@@ -226,40 +226,40 @@ def get_answer():
 
     return jsonify({"answer": answer, "audio_url": audio_url})
 
-# 新增的爬取和总结功能
+# Newly added scraping and summarization features
 @app.route('/search_and_summarize', methods=['POST'])
 def search_and_summarize():
     data = request.get_json()
-    query = data.get('query')  # 获取从前端传来的问题
+    query = data.get('query')  # Retrieve the question sent from the frontend
     
     if not query:
         return jsonify({"error": "Query is required"}), 400
 
     try:
-        # 使用SerpAPI进行Google搜索
+        # Perform a Google search using SerpAPI
         search = GoogleSearch({
             "q": query,
             "location": "Austin, TX",
             "hl": "en",
             "gl": "us",
-            "api_key": "6e10541b32898cb0c23c891a01e1afe0dea941aa8122314229497aaa75bac227"  # 替换为你的SerpAPI密钥
+            "api_key": "6e10541b32898cb0c23c891a01e1afe0dea941aa8122314229497aaa75bac227"  # Replace with the SerpAPI
         })
         results = search.get_dict()
         
-        # 从结果中提取文本信息 (提取搜索结果的摘要)
+        # Extract text information from the results (extract summaries of the search results)
         search_results = results.get("organic_results", [])
         if not search_results:
             return jsonify({"error": "No results found"}), 500
         
-        # 将搜索结果的摘要合并
+        # Combine the summaries of the search results
         text = " ".join([result.get("snippet", "") for result in search_results])
-        #print(f"Extracted Text: {text[:200]}")  # 调试输出部分内容
+        #print(f"Extracted Text: {text[:200]}")  # Debug and output part of the content
         
-        # 限制文本长度，避免文本过长导致问题
+        # Limit the text length to avoid issues caused by excessively long text
         text = text[:2000]
 
-        # 使用OpenAI进行文本总结
-       # 使用 gpt-3.5-turbo 进行总结
+        # Use OpenAI to summarize the text
+       # Use GPT-3.5-turbo to summarize the tex
         summary = openai.chat.completions.create(
             model="gpt-4-turbo",
             messages=[
@@ -273,10 +273,10 @@ def search_and_summarize():
 
     except Exception as e:
         print(f"Error: {e}")
-        #traceback.print_exc()  # 打印错误堆栈追踪
+        #traceback.print_exc()  # Print the error stack trace
         return jsonify({"error": "Failed to summarize content."}), 500
 
-# 发送邮件功能
+# Sending email function
 class SendEmailSkill:
     def __init__(self, api_key, host="chat.jijyun.cn"):
         self.api_key = api_key
@@ -348,12 +348,12 @@ def evaluate():
     if not questions or not reference_answers:
         return jsonify({"error": "Missing evaluation queries or ground truths"}), 400
 
-    # 先创建会话 ID
+    # create a conversation ID
     conversation_id = create_conversation()
     if not conversation_id:
         return jsonify({"error": "Failed to create conversation"}), 500
 
-    # 生成答案时传递问题和会话 ID
+    # Pass the question and session when generating the answer ID
     generated_answers = [query_ragflow_api(q, conversation_id) for q in questions]
 
     composite_scores = []
@@ -376,7 +376,7 @@ if __name__ == '__main__':
 
 
 if __name__ == '__main__':
-    # 应用启动时清理旧的音频文件
+    # Clean up old audio files when the application starts
     clear_static_audio_files()
 
     if not os.path.exists('static'):
