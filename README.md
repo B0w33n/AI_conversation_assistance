@@ -7,7 +7,7 @@ The application uses state-of-the-art Natural Language Processing (NLP) and Mach
 
 - **Speech-To-Text**: Speech-to-Text (STT) is a technology that converts spoken language into written text, allowing users to input information through speech rather than manual typin
 - **Text-To-Speech**: The Text-to-Speech (TTS) module converts text into natural and smooth speech output, providing audio feedback to enhance accessibility and interactivity
-- **Customizable**: You can use the knowledge base or the Google search engine
+- **Customizable**: You can use the knowledge base for retrieval or the Google search engine for general searches
 - **OpenAI API Integration**: The system uses the OpenAI API for generating conversation responses.
 - **Autogen**: Autogen function serves as the automated generation engine for the RAGFlow project. Autogen enables real-time knowledge retrieval and customizable search option to support project objectives.
 - **Memory**: The memory function enables the system to maintain context across multiple interactions
@@ -44,9 +44,12 @@ pip install -r requirements.txt
 
 ###Setup and Usage
 1. Download the project from the Github
+   
 2. Follow the instruction above: pip install -r requirements.txt
+   
 3. Run the app.py
-4. Load the page on the browser
+   
+4. Load the page on the browser, the address is always http://127.0.0.1:5003
 
 
 
