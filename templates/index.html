@@ -215,25 +215,25 @@
 }
 
 
-        /* Modal (弹窗) 样式 */
+        /* Modal Popup window style */
         .modal {
-            display: none; /* 默认隐藏 */
-            position: fixed; /* 固定位置 */
-            z-index: 1; /* 置于最前 */
+            display: none; /* default none */
+            position: fixed; /* fixed position */
+            z-index: 1; /* Place on top */
             left: 0;
             top: 0;
-            width: 100%; /* 全屏宽度 */
-            height: 100%; /* 全屏高度 */
-            background-color: rgba(0, 0, 0, 0.8); /* 半透明黑色背景 */
+            width: 100%; /* Full-screen width */
+            height: 100%; /* Full-screen height */
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
         }
 
         .modal-content {
-            background-color: #151515; /* 背景颜色改为纯黑 */
+            background-color: #151515; /* Change the background color to solid */
             color: #eeeaea;
-            margin: 15% auto; /* 中心显示 */
+            margin: 15% auto; /* Center display */
             padding: 20px;
             border: 1px solid #787878;
-            width: 50%; /* 弹窗宽度 */
+            width: 50%; /* Popup window width */
         }
 
         .close {
@@ -250,22 +250,22 @@
             cursor: pointer;
         }
 
-        /* 使输入框和按钮在同一行并对齐 */
+        /* Make the input field and button appear on the same line and align them */
         .email-container {
             display: flex;
-            align-items: center;  /* 垂直居中对齐 */
+            align-items: center;  /* Vertically center-align */
             margin-top: 20px;
         }
 
         #email-input {
-            flex: 3;  /* 输入框占据剩余空间 */
+            flex: 3;  /* Make the input field occupy the remaining space */
             padding: 10px;
             margin-right: 10px;
             border-radius: 5px;
             border: 1px solid #333;
             background-color: #2a2a2a;
             color: #ddd;
-            box-sizing: border-box;  /* 确保内边距和边框不会影响宽度 */
+            box-sizing: border-box;  /* Ensure that padding and borders do not affect the width */
         }
 
         #send-email-btn {
@@ -276,7 +276,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            white-space: nowrap;  /* 防止按钮文字换行 */
+            white-space: nowrap;  /* Prevent the button text from wrapping */
             margin-left: 0;
         }
 
@@ -297,10 +297,10 @@
     <div id="main-content">
         <h1>AI Conversation Assistant</h1>
     
-        <!-- 聊天框 -->
+        <!-- Chatbox -->
         <div id="chatbox"></div>
     
-        <!-- 输入区域 -->
+        <!-- input area -->
         <div class="input-container">
             <input type="text" id="question" placeholder="Type or modify the content here...">
             <input type="text" id="reference-answer" placeholder="Enter reference answer...">
@@ -309,7 +309,7 @@
             </div>
         </div>
     
-        <!-- 按钮区域 -->
+        <!-- button area -->
         <div class="button-container">
             <button id="evaluate-btn" onclick="evaluateAnswer()">Evaluate</button>
             <label id="upload-label" for="file-input">Upload and Parse File</label>
@@ -321,7 +321,7 @@
 
     <audio id="audio" controls style="display:none;"></audio>
 
-    <!-- 模态窗口 -->
+    <!-- Modal window -->
      <!-- Evaluation Modal -->
 <div id="evaluation-modal" class="modal">
     <div class="modal-content">
@@ -334,12 +334,12 @@
     <div id="myModal" class="modal">
         <div class="modal-content">
             <p id="modal-text">Some text in the Modal..</p>
-            <button id="read-aloud-btn">Read the Text</button> <!-- 语音播放按钮 -->
+            <button id="read-aloud-btn">Read the Text</button> <!-- Voice playback button -->
 
-            <!-- 发送邮件部分 -->
+            <!-- Sending email section -->
             <div class="email-container">
                 <input type="email" id="email-input" placeholder="Enter email address">
-                <button id="send-email-btn">Send Email</button> <!-- 发送邮件按钮 -->
+                <button id="send-email-btn">Send Email</button> <!-- Sending email button -->
             </div>
         </div>
     </div>
@@ -370,7 +370,7 @@
 
         function openModal() {
             modal.style.display = "block";
-            emailInput.value = '';  // 清空输入框的值，每次打开模态窗口时重置输入框
+            emailInput.value = '';  // Clear the input field value and reset the input field every time the modal window is opened
         }
 
         function createNewChat() {
@@ -420,7 +420,7 @@
                 return;
             }
             const chatbox = document.getElementById("chatbox");
-            // 默认通过 RAGFlow 获取答案
+            // By default, retrieve the answer through RAGFlow
             const userMessage = `
                 <div class="message-container user-message-container">
                     <div class="message user-message">
@@ -430,10 +430,10 @@
                     <img class="avatar" src="/static/user.png" alt="User Avatar">
                 </div>`;
             chatbox.innerHTML += userMessage;
-            document.getElementById("question").value = ''; // 清空输入框
-            chatbox.scrollTop = chatbox.scrollHeight; // 自动滚动到最新消息
+            document.getElementById("question").value = ''; // Clear the input field
+            chatbox.scrollTop = chatbox.scrollHeight; // Automatically scroll to the latest message
 
-            // 通过 RAGFlow 获取答案
+            // Retrieve the answer through RAGFlow
             fetch('/get_answer', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -525,14 +525,14 @@
         }
 
         function searchOnGoogle(query) {
-            console.log(query); // 打印问题确认是否获取成功
+            console.log(query); // Print the question to confirm if it has been successfully retrieved
 
             if (!query) {
                 alert("Please enter a question!");
                 return;
             }
             
-            // 发送请求到后端并传递问题
+            // Send a request to the backend and pass the question
             fetch('/search_and_summarize', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -541,8 +541,8 @@
             .then(response => response.json())
             .then(data => {
                 if (data.summary) {
-                    document.getElementById('modal-text').innerHTML = data.summary; // 将搜索结果放入模态内容中
-                    modal.style.display = "block"; // 显示模态窗口
+                    document.getElementById('modal-text').innerHTML = data.summary; // Place the search results into the modal content
+                    modal.style.display = "block"; // Display the modal window
                 } else {
                     alert("Failed to summarize content.");
                 }
@@ -552,18 +552,18 @@
             });
         }
 
-        // 获取模态窗口元素
+        // Get the modal window element
         var modal = document.getElementById("myModal");
 
-        // 获取关闭按钮元素
+        // Get the close button element
         var span = document.getElementsByClassName("close")[0];
 
-        // 当用户点击 x 按钮时，关闭模态窗口
+        // When the user clicks the x button, close the modal window
         span.onclick = function() {
             modal.style.display = "none";
         }
 
-        // 当用户点击模态窗口外部时，关闭模态窗口
+        // When the user clicks outside the modal window, close the modal window
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
@@ -589,11 +589,11 @@
             recognition.start();
         }
 
-        // 使用 Web Speech API 朗读模态窗口的文字
+        // Use the Web Speech API to read aloud the text in the modal window
         function readAloud(text) {
-            const utterance = new SpeechSynthesisUtterance(text);  // 创建一个语音合成对象
-            utterance.lang = 'en-US';  // 设置语言
-            speechSynthesis.speak(utterance);  // 调用语音合成并朗读
+            const utterance = new SpeechSynthesisUtterance(text);  // Create a speech synthesis object
+            utterance.lang = 'en-US';  // set language
+            speechSynthesis.speak(utterance);  // Invoke the speech synthesis and read aloud
         }
         // Function to handle evaluation
         function evaluateAnswer() {
@@ -605,22 +605,22 @@
         return;
     }
 
-    // 获取聊天框元素
+    // get the chat box element
     const chatbox = document.getElementById("chatbox");
 
-    // 将用户的问题显示在聊天框中
+    // Display the user's question in the chat box
     const userMessage = `
         <div class="message-container user-message-container">
             <div class="message user-message">${question}</div>
             <img class="avatar" src="/static/user.png" alt="User Avatar">
         </div>`;
-    chatbox.innerHTML += userMessage;  // 添加用户消息
-    chatbox.scrollTop = chatbox.scrollHeight;  // 滚动到底部
+    chatbox.innerHTML += userMessage;  // Add the user's message
+    chatbox.scrollTop = chatbox.scrollHeight;  // Scroll to the bottom
 
-    // 清空输入框
+    // Clear the input field
     document.getElementById("question").value = '';
 
-    // 调用后端 API 进行评估
+    // Call the backend API for evaluation
     fetch('/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -634,7 +634,7 @@
         if (data.error) {
             alert(`Evaluation failed: ${data.error}`);
         } else {
-            // 构建评估结果
+            // Build the evaluation results
             const results = data.map(result => `
                 <strong>Reference:</strong> ${result.reference_answer} <br>
                 <strong>Generated:</strong> ${result.generated_answer} <br>
@@ -642,14 +642,14 @@
                 <strong>Final Scores:</strong> ${result.final_scores.join(", ")}
             `).join("<hr>");
 
-            // 将评估结果作为机器人的消息显示在聊天框中
+            // Display the evaluation results as the bot's message in the chat box
             const botMessage = `
                 <div class="message-container bot-message-container">
                     <img class="avatar" src="/static/bot.jpg" alt="Bot Avatar">
                     <div class="message bot-message">${results}</div>
                 </div>`;
-            chatbox.innerHTML += botMessage;  // 添加机器人消息
-            chatbox.scrollTop = chatbox.scrollHeight;  // 滚动到底部
+            chatbox.innerHTML += botMessage;  // Add the bot's message
+            chatbox.scrollTop = chatbox.scrollHeight;  // Scroll to the bottom
         }
     })
     .catch(error => {
@@ -664,7 +664,7 @@
     });
 }
 
-// 关闭模态窗口的逻辑
+// The logic to close the modal window
 function closeEvaluationModal() {
     document.getElementById('evaluation-modal').style.display = "none";
 }
@@ -678,35 +678,35 @@ function closeEvaluationModal() {
 }
 
 
-        // 给播放按钮添加点击事件，点击时朗读模态窗口中的文字
+        // Add a click event to the play button, and when clicked, read aloud the text in the modal window
         document.getElementById('read-aloud-btn').onclick = function() {
-            const text = document.getElementById('modal-text').textContent;  // 获取模态窗口中的文字
-            readAloud(text);  // 调用朗读函数
+            const text = document.getElementById('modal-text').textContent;  // Get the text from the modal window
+            readAloud(text);  // Call the function to read aloud
         }
         span.onclick = function() {
             modal.style.display = "none";
-            speechSynthesis.cancel();  // 停止正在进行的语音朗读
+            speechSynthesis.cancel();  // Stop the ongoing speech synthesis
         }
 
-        // 获取模态窗口中的发送邮件按钮
+        // Get the send email button in the modal window
         document.getElementById('send-email-btn').onclick = function() {
-            const email = document.getElementById('email-input').value;  // 获取输入的邮箱地址
-            const emailContent = document.getElementById('modal-text').textContent;  // 获取模态窗口中的文字
+            const email = document.getElementById('email-input').value;  // Get the entered email address
+            const emailContent = document.getElementById('modal-text').textContent;  // Get the text from the modal window
 
             if (!email) {
-                alert("Please enter a valid email address!");  // 检查是否输入了邮箱地址
+                alert("Please enter a valid email address!");  // Check if an email address has been entered
                 return;
             }
 
-            // 调用后端 API 发送邮件
+            // Call the backend API to send the email
             fetch('/send_email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email_content: emailContent,  // 邮件内容为模态窗口中的文字
-                    recipient_email: email  // 发送到的邮箱地址
+                    email_content: emailContent,  // The email content should be the text from the modal window
+                    recipient_email: email  // The email address to send to
                 }),
             })
             .then(response => response.json())
@@ -724,11 +724,11 @@ function closeEvaluationModal() {
         };
 
 
-// 当用户点击模态窗口外部时，也关闭模态窗口并停止语音
+// When the user clicks outside the modal window, close the modal window and stop the speech synthesis
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
-                speechSynthesis.cancel();  // 停止正在进行的语音朗读
+                speechSynthesis.cancel();  // Stop the ongoing speech synthesis
             }
         };
     </script>
