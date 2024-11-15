@@ -40,7 +40,7 @@ Before you begin, make sure you have the following dependencies installed:
 
 ```bash
 pip install -r requirements.txt
-
+```
 
 ###Setup and Usage
 1. Download the project from the Github
