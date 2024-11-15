@@ -14,13 +14,13 @@ import json
 OPENAI_API_KEY = 'sk-_c5WCLMLPcFi0ATazdykKeRyJu0FTgzDg1xldEsGz0T3BlbkFJ9D-4oQAkQ8e6pOETrNWVDPKrhQojXkTKKSdz6rIHYA'
 
 # ---------------------
-# 功能1：谷歌搜索并爬取网页内容
+# Function 1: Google Search & Scrape web content
 # ---------------------
 def google_search_first_result(query: str, max_chars: int = 500) -> dict:
     # load_dotenv(r"C:\Users\ALIENWARE\Documents\AgentChat\.env")
 
-    api_key = os.getenv("GOOGLE_API_KEY") # 直接用OPENAI KEY代替
-    search_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID") # 直接用GOOGLE_SEARCH_ENGINE_ID代替
+    api_key = os.getenv("GOOGLE_API_KEY") # Replace with the OPENAI KEY
+    search_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID") # Replace with the GOOGLE_SEARCH_ENGINE_ID
 
     if not api_key or not search_engine_id:
         raise ValueError("API key or Search Engine ID not found in environment variables")
@@ -59,7 +59,7 @@ def google_search_first_result(query: str, max_chars: int = 500) -> dict:
     }
 
 # ---------------------
-# 功能2：内容总结模块
+# Function 2: Content Summarization module
 # ---------------------
 def summarize_content(content: str) -> str:
     summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
@@ -67,7 +67,7 @@ def summarize_content(content: str) -> str:
     return summary[0]['summary_text']
 
 # ---------------------
-# 功能3：发送邮件
+# Function 3: Send the email
 # ---------------------
 import http.client
 import json
@@ -75,10 +75,10 @@ from typing import Any
 
 def send_email(email_content: str, recipient_email: str) -> str:
     """
-    发送邮件的主函数
-    :param email_content: 发送邮件的内容
-    :param recipient_email: 接收邮件的邮箱地址
-    :return: 服务器的响应
+    Main function for sending emails
+    :param email_content: content of the email
+    :param recipient_email: email address for receiving mail
+    :return: Server response
     """
     from dotenv import load_dotenv
     import os
@@ -91,13 +91,13 @@ def send_email(email_content: str, recipient_email: str) -> str:
 
     conn = http.client.HTTPSConnection("chat.jijyun.cn")
 
-    # 构建请求体 payload
+    # Build the request body payload
     payload = json.dumps({
         "instructions": f"发送邮件内容：{email_content}，到邮箱: {recipient_email}",
         "preview_only": False
     })
 
-    # 设置请求头
+    # Set the request headers
     headers = {
         'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
         'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ def send_email(email_content: str, recipient_email: str) -> str:
 
 
 # ---------------------
-# 创建工具（Tools）
+# Setup tools
 # ---------------------
 google_search_tool = FunctionTool(
     google_search_first_result,
@@ -143,7 +143,7 @@ send_email_tool = FunctionTool(
 )
 
 # ---------------------
-# 创建代理（Agents）
+# Setup agents
 # ---------------------
 search_agent = ToolUseAssistantAgent(
     name="Google_Search_Agent",
@@ -163,13 +163,13 @@ summarize_agent = ToolUseAssistantAgent(
 
 class EmailStopAgent(ToolUseAssistantAgent):
     async def run(self, *args, **kwargs):
-        # 在发送完邮件后停止代理任务
+        # Stop the agent task after sending the email
         result = await super().run(*args, **kwargs)
         print("Email has been sent, stopping the execution.")
-        # 可以直接返回，停止后续的代理任务
+        # return directly to stop the subsequent agent tasks after sending the email
         return result
 
-# 使用自定义的 EmailStopAgent
+# Use the custom EmailStopAgent
 email_agent = EmailStopAgent(
     name="Email_Agent",
     model_client=OpenAIChatCompletionClient(model="gpt-4o-mini", api_key=OPENAI_API_KEY),
@@ -178,12 +178,12 @@ email_agent = EmailStopAgent(
     system_message="Send the summarized content to the provided email address and stop the execution after sending email."
 )
 # ---------------------
-# 创建团队（Team）
+# Setup the team
 # ---------------------
 team = RoundRobinGroupChat([search_agent, summarize_agent, email_agent])
 
 # ---------------------
-# 主函数
+# Main function
 # ---------------------
 def run_team_query(question):
     async def main():
@@ -199,4 +199,4 @@ def run_team_query(question):
         result = loop.run_until_complete(main())
         return result
     finally:
-        loop.close()  # 确保事件循环被正确关闭
+        loop.close()  # Ensure that the event loop is properly closed
