@@ -12,13 +12,13 @@ import http.client
 import json
 
 # ---------------------
-# 功能1：谷歌搜索并爬取网页内容
+# Function1: Google Search 
 # ---------------------
 def google_search_first_result(query: str, max_chars: int = 500) -> dict:
     # load_dotenv(r"C:\Users\ALIENWARE\Documents\AgentChat\.env")
 
-    api_key = os.getenv("GOOGLE_API_KEY") # 直接用OPENAI KEY代替
-    search_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID") # 直接用GOOGLE_SEARCH_ENGINE_ID代替
+    api_key = os.getenv("GOOGLE_API_KEY") # replace with the OPENAI KEY
+    search_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID") # replace with the GOOGLE_SEARCH_ENGINE_ID
 
     if not api_key or not search_engine_id:
         raise ValueError("API key or Search Engine ID not found in environment variables")
@@ -57,7 +57,7 @@ def google_search_first_result(query: str, max_chars: int = 500) -> dict:
     }
 
 # ---------------------
-# 功能2：内容总结模块
+# Function 2:  content summarization module
 # ---------------------
 def summarize_content(content: str) -> str:
     summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
@@ -65,7 +65,7 @@ def summarize_content(content: str) -> str:
     return summary[0]['summary_text']
 
 # ---------------------
-# 功能3：发送邮件
+# Function 3: Send the email
 # ---------------------
 import http.client
 import json
@@ -73,10 +73,10 @@ from typing import Any
 
 def send_email(email_content: str) -> str:
     """
-    发送邮件的主函数
-    :param email_content: 发送邮件的内容
-    :param recipient_email: 接收邮件的邮箱地址
-    :return: 服务器的响应
+    Sending email function
+    :param email_content: the content of the email
+    :param recipient_email: the email address for receiving mail
+    :return: Server Response
     """
     from dotenv import load_dotenv
     import os
@@ -89,13 +89,13 @@ def send_email(email_content: str) -> str:
 
     conn = http.client.HTTPSConnection("chat.jijyun.cn")
 
-    # 构建请求体 payload
+    #Build the request body payload
     payload = json.dumps({
         "instructions": f"发送邮件内容：{email_content}，到邮箱: zyp_initiald@163.com",
         "preview_only": False
     })
 
-    # 设置请求头
+    # Set the request headers
     headers = {
         'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
         'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ def send_email(email_content: str) -> str:
 
 
 # ---------------------
-# 创建工具（Tools）
+# Setup tools
 # ---------------------
 google_search_tool = FunctionTool(
     google_search_first_result,
@@ -141,7 +141,7 @@ send_email_tool = FunctionTool(
 )
 
 # ---------------------
-# 创建代理（Agents）
+# Setup agents
 # ---------------------
 search_agent = ToolUseAssistantAgent(
     name="Google_Search_Agent",
@@ -168,7 +168,7 @@ email_agent = ToolUseAssistantAgent(
 )
 
 # ---------------------
-# 创建团队（Team）
+# Setup the team
 # ---------------------
 team = RoundRobinGroupChat([search_agent, summarize_agent, email_agent])
 
