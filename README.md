@@ -56,11 +56,8 @@ pip install -r requirements.txt
 
 ## DEMO
 
-<iframe width="560" height="315" 
-        src="https://www.youtube.com/watch?v=EMemcOMaOxc" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-</iframe>
+## DEMO
+[点击这里查看视频 DEMO](https://www.youtube.com/watch?v=EMemcOMaOxc)
+
 
 
